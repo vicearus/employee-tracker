@@ -18,8 +18,9 @@
   npm test
   ```
   ## Usage
-
+  Create the database and tables by copying and running the SQL code from schema.sql.
   Enter node index.js in the terminal for the app to begin prompts. Navigate through the menu to select which action you would like to perform and answer the prompts to view or edit your list of employees and their information.
+  Walkthrough video [here](https://app.castify.com/view/b0451dc6-7c4c-4186-9144-ad8d34319979)
   
   ## Credits
   inquirer used for prompts
