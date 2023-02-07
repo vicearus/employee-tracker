@@ -2,9 +2,9 @@ require("dotenv").config();
 const inquirer = require("inquirer");
 const {
     mainPrompt,
-    addingEmployee,
-    addingRole,
-    addingDepartment,
+    addEmployee,
+    addRole,
+    addDepartment,
 } = require("./questions");
 const cTable = require("console.table");
 const db = require("./config/connections");
@@ -26,7 +26,7 @@ const askMainPrompt = () => {
                     console.log("-----EMPLOYEE TRACKER APPLICATION ENDED. GOODBYE!-----");
                     break;
 
-                // When user selects View All Employee
+                // When user selects View All Employees
                 case "view_employee":
                     console.log(" ");
                     db.query(`
@@ -50,6 +50,7 @@ const askMainPrompt = () => {
                     })
                     break;
 
+                    // Wheen user selects View All Roles
                 case "view_role":
                     console.log(" ");
                     db.query(`
@@ -80,6 +81,8 @@ const askMainPrompt = () => {
                         askMainPrompt();
                     })
                     break;
+
+                
             }
         })
 }
