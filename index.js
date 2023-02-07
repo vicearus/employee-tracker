@@ -1,13 +1,13 @@
 require("dotenv").config();
 const inquirer = require("inquirer");
 const {
-    mainPrompt,
+    main,
     addEmployee,
     addRole,
     addDepartment,
 } = require("./questions");
 const cTable = require("console.table");
-const db = require("./config/connections");
+const db = require("./config/connection.js");
 
 // Function to start application
 const startTracker = () => {
@@ -18,7 +18,8 @@ const startTracker = () => {
 
 // Function to ask mainPrompt
 const askMainPrompt = () => {
-    inquirer.prompt(mainPrompt)
+    console.log("hello")
+    inquirer.prompt(main)
         .then((res) => {
             switch (res.mainChoice) {
                 // When user selects Quit
@@ -118,12 +119,11 @@ const askMainPrompt = () => {
                                             `, (err, data) => {
                                                 if (err) throw err;
                                                 const mapData = data.map((obj) => { return obj.name });
-                                                const concatData = mapData.concat("None");
                                                 inquirer.prompt({
                                                     type: "list",
                                                     message: "Who is the new employee's manager?",
                                                     name: "new_manager",
-                                                    choices: concatData
+                                                    choices: mapData
                                                 })
                                                     .then((res) => {
                                                         const newManager = res.new_manager;
@@ -157,7 +157,7 @@ const askMainPrompt = () => {
                 // When user selects Add Role
                 case "add_role":
                     console.log(" ");
-                    inquirer.prompt(addingRole)
+                    inquirer.prompt(addRole)
                         .then((res) => {
                             const newRole = res.new_role;
                             const newRoleSalary = res.new_role_salary;
@@ -201,7 +201,7 @@ const askMainPrompt = () => {
                 // When user selects Add Department
                 case "add_department":
                     console.log(" ");
-                    inquirer.prompt(addingDepartment)
+                    inquirer.prompt(addDepartment)
                         .then((res) => {
                             const newDepartment = res.new_department;
 
@@ -216,6 +216,62 @@ const askMainPrompt = () => {
                                 askMainPrompt();
                             })
                         })
+                    break;
+
+                // When user selects Update Employee Role
+                case "update_role":
+                    console.log(" ");
+                    db.query(`
+                        SELECT CONCAT(employee.first_name, ' ', employee.last_name) AS name FROM employee;
+                    `, (err, data) => {
+                        if (err) throw err;
+                        const employeeName = data.map((obj) => { return obj.name });
+                        inquirer.prompt({
+                            type: "list",
+                            message: "Which employee do you want their role updated?",
+                            name: "employee_update_name",
+                            choices: employeeName
+                        })
+                            .then((res) => {
+                                const employeeUpdateName = res.employee_update_name;
+
+                                // Updating employee role - prompting for the new role
+                                db.query(`
+                                    SELECT role.title FROM role;
+                                `, (err, data) => {
+                                    if (err) throw err;
+                                    const roleForUpdate = data.map((obj) => { return obj.title })
+                                    inquirer.prompt({
+                                        type: "list",
+                                        message: "What will be the employee's new role?",
+                                        name: "employee_update_role",
+                                        choices: roleForUpdate
+                                    })
+                                        .then((res) => {
+                                            const employeeUpdateRole = res.employee_update_role;
+
+                                            db.query(`
+                                                SELECT role.id FROM role WHERE role.title = "${employeeUpdateRole}";
+                                            `, (err, data) => {
+                                                if (err) throw err;
+                                                const employeeUpdateRoleID = data[0].id;
+
+                                                // Updating employee role in database
+                                                db.query(`
+                                                    UPDATE employee
+                                                    SET role_id = ${employeeUpdateRoleID}
+                                                    WHERE CONCAT(employee.first_name, ' ', employee.last_name) = "${employeeUpdateName}";
+                                                `, (err, data) => {
+                                                    if (err) throw err;
+                                                    console.log("-----EMPLOYEE'S ROLE HAS BEEN UPDATED!-----");
+                                                    console.log(" ");
+                                                    askMainPrompt();
+                                                })
+                                            })
+                                        })
+                                })
+                            })
+                    })
                     break;
 
 

@@ -8,20 +8,20 @@ const main = {
             value: "view_department"
         },
         {
-            name: "Add Department",
-            value: "add_department"
-        },
-        {
             name: "View All Roles",
             value: "view_role"
         },
         {
-            name: "Add Role",
-            value: "add_role"
-        },
-        {
             name: "View All Employees",
             value: "view_employee"
+        },
+        {
+            name: "Add Department",
+            value: "add_department"
+        },
+        {
+            name: "Add Role",
+            value: "add_role"
         },
         {
             name: "Add Employee",
